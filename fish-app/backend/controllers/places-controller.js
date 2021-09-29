@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 
 const HttpError = require("../models/http-error");
 const Place = require("../models/place");
-const user = require("../models/user");
 const User = require("../models/user");
 const getCoordsForAddress = require("../util/location");
 
