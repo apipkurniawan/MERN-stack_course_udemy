@@ -37,7 +37,6 @@ const getPlaceById = async (req, res, next) => {
 
 const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
-  console.log(userId);
 
   /* code yg diremark tidak dipakai dulu karena ada error, 
   perlu pemahaman lebih lanjut tentang relasi antar document di mongoDB*/
@@ -118,8 +117,6 @@ const createPlace = async (req, res, next) => {
     const error = new HttpError("Could not find user for provided id", 404);
     return next(error);
   }
-
-  console.log(user);
 
   try {
     await createdPlace.save();
