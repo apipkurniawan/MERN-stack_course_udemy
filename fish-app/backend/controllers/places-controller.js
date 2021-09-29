@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
 const { validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 
 const HttpError = require("../models/http-error");
 const Place = require("../models/place");
@@ -94,7 +94,10 @@ const createPlace = async (req, res, next) => {
   try {
     user = await User.findById(creator);
   } catch (err) {
-    const error = new HttpError("Creating place failed, please try again", 500);
+    const error = new HttpError(
+      "Creating place failed, please try again. " + err.message,
+      500
+    );
     return next(error);
   }
 
@@ -106,15 +109,20 @@ const createPlace = async (req, res, next) => {
   console.log(user);
 
   try {
-    const sess = await mongoose.startSession();
-    sess.startTransaction();
-    await createdPlace.save({ session: sess });
-    user.places.push(createdPlace);
-    await user.save({ session: sess });
-    await sess.commitTransaction();
+    await createdPlace.save();
+
+    /* code ini tidak dipakai dulu karena ada error waktu simpan */
+    /* ------------------------------------- */
+    // const sess = await mongoose.startSession();
+    // sess.startTransaction();
+    // await createdPlace.save({ session: sess });
+    // user.places.push(createdPlace);
+    // await user.save({ session: sess });
+    // await sess.commitTransaction();
+    /* ------------------------------------- */
   } catch (err) {
     const error = new HttpError(
-      "Creating place failed, please try again.",
+      "Creating place failed, please try again. " + err.message,
       500
     );
     return next(error);

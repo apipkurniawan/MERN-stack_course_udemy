@@ -6,9 +6,8 @@ import LoadingSpinner from "../../shared/components/UIElement/LoadingSpinner";
 import ErrorModal from "../../shared/components/UIElement/ErrorModal";
 
 const Users = () => {
-  const [loadedUsers, setLoadedUsers] = useState();
-
   const { isLoading, sendRequest, error, clearError } = useHttpClient();
+  const [loadedUsers, setLoadedUsers] = useState();
 
   useEffect(() => {
     const fetchUsers = async () => {
