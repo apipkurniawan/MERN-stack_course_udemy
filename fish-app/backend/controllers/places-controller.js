@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 
 const HttpError = require("../models/http-error");
 const Place = require("../models/place");
@@ -185,9 +185,13 @@ const updatePlace = async (req, res, next) => {
 const deletePlace = async (req, res, next) => {
   const placeId = req.params.pid;
 
+  /* code yg diremark tidak dipakai dulu karena ada error waktu hapus,
+    perlu pemahaman lebih lanjut tentang relasi antar document di mongoDB*/
+
   let place;
   try {
-    place = await Place.findById(placeId).populate("creator");
+    place = await Place.findById(placeId);
+    // place = await Place.findById(placeId).populate("creator");
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not delete place.",
@@ -202,12 +206,13 @@ const deletePlace = async (req, res, next) => {
   }
 
   try {
-    const sess = await mongoose.startSession();
-    sess.startTransaction();
-    await place.remove({ session: sess });
-    place.creator.places.pull(place);
-    await place.creator.save({ session: sess });
-    await sess.commitTransaction();
+    await place.remove();
+    // const sess = await mongoose.startSession();
+    // sess.startTransaction();
+    // await place.remove({ session: sess });
+    // place.creator.places.pull(place);
+    // await place.creator.save({ session: sess });
+    // await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not delete place.",
