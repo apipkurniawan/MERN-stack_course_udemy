@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 
 const HttpError = require("../models/http-error");
 const Place = require("../models/place");
+const user = require("../models/user");
 const User = require("../models/user");
 const getCoordsForAddress = require("../util/location");
 
@@ -36,11 +37,20 @@ const getPlaceById = async (req, res, next) => {
 
 const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
+  console.log(userId);
 
-  // let places;
-  let userWithPlaces;
+  /* code yg diremark tidak dipakai dulu karena ada error, 
+  perlu pemahaman lebih lanjut tentang relasi antar document di mongoDB*/
+
+  /* ------------------------------------- */
+  // let userWithPlaces;
+  /* ------------------------------------- */
+  let places;
   try {
-    userWithPlaces = await User.findById(userId).populate("places");
+    places = await Place.find({ creator: userId });
+    /* ------------------------------------- */
+    // userWithPlaces = await User.findById(userId).populate("places");
+    /* ------------------------------------- */
   } catch (err) {
     const error = new HttpError(
       "Fetching places failed, please try again later",
@@ -49,15 +59,18 @@ const getPlacesByUserId = async (req, res, next) => {
     return next(error);
   }
 
-  // if (!places || places.length === 0) {
-  if (!userWithPlaces || userWithPlaces.places.length === 0) {
+  /* ------------------------------------- */
+  // if (!userWithPlaces || userWithPlaces.places.length === 0) {
+  /* ------------------------------------- */
+  if (!places || places.length === 0) {
     return next(
       new HttpError("Could not find places for the provided user id.", 404)
     );
   }
 
   res.json({
-    places: userWithPlaces.places.map((place) =>
+    places: places.map((place) =>
+      // places: userWithPlaces.places.map((place) =>
       place.toObject({ getters: true })
     ),
   });
@@ -111,7 +124,9 @@ const createPlace = async (req, res, next) => {
   try {
     await createdPlace.save();
 
-    /* code ini tidak dipakai dulu karena ada error waktu simpan */
+    /* code yg diremark tidak dipakai dulu karena ada error waktu simpan,
+    perlu pemahaman lebih lanjut tentang relasi antar document di mongoDB*/
+
     /* ------------------------------------- */
     // const sess = await mongoose.startSession();
     // sess.startTransaction();
