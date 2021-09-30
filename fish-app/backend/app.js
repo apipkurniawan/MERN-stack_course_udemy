@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+
 const express = require("express");
 const bodyParser = require("body-parser");
 
@@ -9,6 +12,9 @@ const usersRoutes = require("./routes/users-routes");
 const app = express();
 
 app.use(bodyParser.json());
+
+// handle url images
+app.use("/uploads/images", express.static(path.join("uploads", "images")));
 
 // handle CORS-Origin
 app.use((req, res, next) => {
@@ -30,6 +36,13 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
+  if (req.file) {
+    // validate penyimpanan image, jika ada error saat simpan, image tidak akan tersimpan
+    console.log(req.file);
+    fs.unlink(req.file.path, (err) => {
+      console.log(err);
+    });
+  }
   if (res.headerSent) {
     return next(error);
   }
